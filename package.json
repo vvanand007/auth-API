@@ -1,0 +1,26 @@
+{
+  "name": "auth-API",
+  "version": "1.0.0",
+  "description": "",
+  "main": "handler.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vvanand007/auth-API.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/vvanand007/auth-API/issues"
+  },
+  "homepage": "https://github.com/vvanand007/auth-API#readme",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "bcryptjs-then": "^1.0.1",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.9.5"
+  }
+}
