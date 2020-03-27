@@ -2,34 +2,30 @@ const connectToDatabase = require("../db");
 const User = require("../user/User");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs-then");
-
+const HEADER = {
+  "Content-Type": "application/json",
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Credentials": true
+};
 module.exports.register = (event, context) => {
   context.callbackWaitsForEmptyEventLoop = false;
   return connectToDatabase()
     .then(() => register(JSON.parse(event.body)))
     .then(session => ({
       statusCode: 200,
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Credentials": true
-      },
+      headers: HEADER,
       body: JSON.stringify(session)
     }))
     .catch(err => ({
       statusCode: err.statusCode || 500,
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Credentials": true
-      },
+      headers: HEADER,
       body: err.message
     }));
 };
 
 function signToken(id) {
   return jwt.sign({ id: id }, process.env.JWT_SECRET, {
-    expiresIn: 86400 // expires in 24 hours
+    expiresIn: 180 // token expires in 3 mins
   });
 }
 
@@ -91,20 +87,12 @@ module.exports.login = (event, context) => {
     .then(() => login(JSON.parse(event.body)))
     .then(session => ({
       statusCode: 200,
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Credentials": true
-      },
+      headers: HEADER,
       body: JSON.stringify(session)
     }))
     .catch(err => ({
       statusCode: err.statusCode || 500,
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Credentials": true
-      },
+      headers: HEADER,
       body: { stack: err.stack, message: err.message }
     }));
 };
@@ -137,20 +125,12 @@ module.exports.me = (event, context) => {
     )
     .then(session => ({
       statusCode: 200,
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Credentials": true
-      },
+      headers: HEADER,
       body: JSON.stringify(session)
     }))
     .catch(err => ({
       statusCode: err.statusCode || 500,
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Credentials": true
-      },
+      headers: HEADER,
       body: { stack: err.stack, message: err.message }
     }));
 };
