@@ -2,6 +2,7 @@ const connectToDatabase = require("../db");
 const User = require("../user/User");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs-then");
+const cors = require(cors);
 
 module.exports.register = (event, context) => {
   context.callbackWaitsForEmptyEventLoop = false;
@@ -20,7 +21,7 @@ module.exports.register = (event, context) => {
 
 function signToken(id) {
   return jwt.sign({ id: id }, process.env.JWT_SECRET, {
-    expiresIn: 86400 // expires in 24 hours
+    expiresIn: 300 // expires in 5 mins
   });
 }
 
@@ -54,13 +55,11 @@ function checkIfInputIsValid(eventBody) {
 
 function register(eventBody) {
   return checkIfInputIsValid(eventBody) // validate input
-    .then(
-      () => User.findOne({ email: eventBody.email }) // check if user exists
-    )
+    .then(() => User.findOne({ email: eventBody.email })) // check if user exists
     .then(
       user =>
         user
-          ? Promise.reject(new Error("User with that email exists."))
+          ? Promise.reject(new Error("User with that email already exists."))
           : bcrypt.hash(eventBody.password, 8) // hash the pass
     )
     .then(

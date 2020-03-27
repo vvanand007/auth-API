@@ -1,6 +1,7 @@
 const connectToDatabase = require("../db");
 const User = require("./User");
 
+//lambda function
 module.exports.getUsers = (event, context) => {
   context.callbackWaitsForEmptyEventLoop = false;
   return connectToDatabase()
@@ -16,6 +17,7 @@ module.exports.getUsers = (event, context) => {
     }));
 };
 
+//helper function
 function getUsers() {
   return User.find({})
     .then(users => users)
