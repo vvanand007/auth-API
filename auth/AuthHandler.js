@@ -2,7 +2,6 @@ const connectToDatabase = require("../db");
 const User = require("../user/User");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs-then");
-const cors = require(cors);
 
 module.exports.register = (event, context) => {
   context.callbackWaitsForEmptyEventLoop = false;
@@ -10,26 +9,35 @@ module.exports.register = (event, context) => {
     .then(() => register(JSON.parse(event.body)))
     .then(session => ({
       statusCode: 200,
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Credentials": true
+      },
       body: JSON.stringify(session)
     }))
     .catch(err => ({
       statusCode: err.statusCode || 500,
-      headers: { "Content-Type": "text/plain" },
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Credentials": true
+      },
       body: err.message
     }));
 };
 
 function signToken(id) {
   return jwt.sign({ id: id }, process.env.JWT_SECRET, {
-    expiresIn: 300 // expires in 5 mins
+    expiresIn: 86400 // expires in 24 hours
   });
 }
 
 function checkIfInputIsValid(eventBody) {
-  if (!(eventBody.password && eventBody.password.length >= 7)) {
+  if (!(eventBody.password && eventBody.password.length >= 5)) {
     return Promise.reject(
       new Error(
-        "Password error. Password needs to be longer than 8 characters."
+        "Password error. Password needs to be longer than 5 characters."
       )
     );
   }
@@ -55,11 +63,13 @@ function checkIfInputIsValid(eventBody) {
 
 function register(eventBody) {
   return checkIfInputIsValid(eventBody) // validate input
-    .then(() => User.findOne({ email: eventBody.email })) // check if user exists
+    .then(
+      () => User.findOne({ email: eventBody.email }) // check if user exists
+    )
     .then(
       user =>
         user
-          ? Promise.reject(new Error("User with that email already exists."))
+          ? Promise.reject(new Error("User with that email exists."))
           : bcrypt.hash(eventBody.password, 8) // hash the pass
     )
     .then(
@@ -81,11 +91,20 @@ module.exports.login = (event, context) => {
     .then(() => login(JSON.parse(event.body)))
     .then(session => ({
       statusCode: 200,
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Credentials": true
+      },
       body: JSON.stringify(session)
     }))
     .catch(err => ({
       statusCode: err.statusCode || 500,
-      headers: { "Content-Type": "text/plain" },
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Credentials": true
+      },
       body: { stack: err.stack, message: err.message }
     }));
 };
@@ -118,11 +137,20 @@ module.exports.me = (event, context) => {
     )
     .then(session => ({
       statusCode: 200,
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Credentials": true
+      },
       body: JSON.stringify(session)
     }))
     .catch(err => ({
       statusCode: err.statusCode || 500,
-      headers: { "Content-Type": "text/plain" },
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Credentials": true
+      },
       body: { stack: err.stack, message: err.message }
     }));
 };
