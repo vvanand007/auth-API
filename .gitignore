@@ -2,5 +2,8 @@
 node_modules
 jspm_packages
 
+#DB conf
+secrets.json
+
 # Serverless directories
 .serverless
